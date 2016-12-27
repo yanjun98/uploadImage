@@ -1,0 +1,130 @@
+<!doctype html>
+<html>
+	<head>
+		<title>imgAdust demo</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+		<style>
+			html,body{
+				margin:0;
+				padding:0;
+				width: 100%;
+				height: 100%;
+				overflow: hidden;
+			}
+			/*img{
+				width: 100%;
+			}*/
+			
+			.container{
+				width: 100%;
+				height: 100%;
+			}
+			
+			.btns{
+				position: absolute;
+				left:0;
+				top:0;
+			}
+			button{
+				border:1px solid #000;
+				padding:3px;
+				margin:10px;
+			}
+			#imgFrame{
+				position: absolute;
+				width: 50%;
+				height: 50%;
+				left:25%;
+				top:25%;
+				border:2px solid gray;
+				pointer-events: none;
+				-webkit-box-sizing: border-box;
+				box-sizing: border-box;
+			}
+			.img-holder{
+				position: relative;
+			}
+
+			#aImg{
+				width: 100%;
+				position: absolute;
+				top:0;
+				left:0;
+			}
+
+			#myCVS{
+				position: absolute;
+				bottom:0;
+				right: 0;
+				pointer-events: none;
+			}
+
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="img-holder" id="img-holder">
+				<img src="images/temp.png" alt="" id="aImg">
+			</div>
+			<div id="imgFrame"></div>
+			<canvas id = "myCVS"></canvas>
+			<div class="btns">
+				<button id="btn-upload">upload img</button>
+				<button id="btn-confirm">adjust img ok</button>
+			</div>
+		</div>
+		<!-- container end -->
+		<script src="js/hammer.js"></script>
+		<script src="js/exif.js"></script>
+		<script src="js/imgslter.js"></script>
+		<script src="js/imgAdjust.js"></script>
+		<script>
+			var btnConfirm = document.getElementById('btn-confirm');
+			var btnAdjust = document.getElementById('btn-adjust');
+
+			var imgAdjust;
+
+			/*init image select*/
+			var selecter = new ImgSlter();
+			    selecter.size = 1200;
+			    selecter.quality = 1;
+
+	    selecter.handler = function(data){
+	    	var AImg = document.getElementById('aImg');
+        AImg.src = data.img;
+        AImg.onload = function(){
+        	var posTop = (document.body.clientHeight -  AImg.height) * .5;
+        	AImg.style.top = posTop + 'px';
+        }
+        imgAdjust = new ImgAdjust(AImg);
+	    };
+	    document.getElementById('btn-upload').addEventListener('click', function(){
+	        selecter.select();
+	    });
+		
+
+			btnConfirm.addEventListener('click', function(e){
+				var _imgFrame = document.getElementById('imgFrame');
+				var myCVS = document.getElementById('myCVS');
+				myCVS.width = _imgFrame.offsetWidth;
+				myCVS.height = _imgFrame.offsetHeight;
+				// console.log(_imgFrame.offsetWidth);
+
+				if(!imgAdjust) return;
+					console.log('confirm adjust image');
+					imgAdjust.drawImgAfterAdjust(myCVS);
+					// console.log(myCVS.toDataURL("image/jpeg",0.7));
+			});
+
+			
+
+
+			document.ontouchmove = function(e){
+				e.stopPropagation();
+				e.preventDefault();
+			}
+			
+		</script>
+	</body>
+</html>
